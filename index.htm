@@ -1,348 +1,364 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        *{
-        padding: 0;
-        margin: 0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        box-sizing: border-box;
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liquid Glass Tic-Tac-Toe</title>
+  <style>
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.18);
+      --glass-border: rgba(255, 255, 255, 0.35);
+      --glass-highlight: rgba(255, 255, 255, 0.6);
+    }
 
-        }
-        header {
-            width: 100vw;
-            height: 40px;
-            background: violet;
-            display: grid;
-            place-items: center;
-            color: white;
-            font-size: 1rem;
-            font-weight: 800;
-        }
-        main{
-            width: 100vw;
-            height: calc(100vh - 40px);
-            background:violet;
-            display:grid;
-            place-items: center;
-            position: relative;
-        }
-        .game_cnt{
-            display:table;
-            height:400px;
-            width: 400px;
-            border: solid 2px white;
-        }
-        .game_box_row{
-            display: table-row;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
 
-        }
-        .game_box{
-            display: table-cell;
-            border: solid 2px white;
-            width:133px;
-            height: 133px;
-            
-        }
-        .panel_board{
-            position: absolute;
-            height:90px;
-            width: 400px;
-            border: solid 2px white;
-            top: 15px;
-            display:flex;
+    body {
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #3b044f, #63156a, #8d3a84, #b25b9d, #c987b2);
+      background-size: 300% 300%;
+      animation: background-move 12s ease-in-out infinite;
+      overflow: hidden;
+      color: #fff;
+    }
 
-            
-        }
-        .panel_board{
-            /* display:table-cell; */
-            /* height: 100%; */
-            flex-basis: 50%;
-            /* height: 100%; */
-            width:50%;
-            position: absolute;
-            top: 0;
-            display: flex;
-            align-items: center;
-            
-        }
-        .x_panel_board{
-            flex-direction: row-reverse;
-        }
-        .o_panel_board {
-            right: 0;
-        }
-        .panel_img{
-            flex-basis: 50%;
-            /* height: 100%; */
-            width:50%;
-            /* position: absolute; */
-            /* top: 0; */
-            display: grid;
-            place-items: center;
-            font-size: 2.4rem;
-            font-weight: 700;
-            color: #fff;
+    @keyframes background-move {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-        }
-        .panel_img img {
-            height: 80%;
-            width: 80%;
-        }
-        .x_box{
-            background: url(asset/Union.svg);
-            background-size: cover;
-            background-repeat: no-repeat;
-        }
-        .o_box{
-            background: url(asset/Ellipse1.svg);
-            background-size: cover;
-            background-repeat: no-repeat;
-        }
-        .undo_btn{
-            position: fixed;
-            width: 60px;
-            height: 40px;
-            top: 10px;
-            left: 100px;
-        }
-        
-    </style>
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 25px;
+    }
+
+    /* Title */
+    .header {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Glass container frame */
+    .glass-container {
+      background: var(--glass-bg);
+      backdrop-filter: blur(15px) saturate(180%);
+      -webkit-backdrop-filter: blur(15px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 22px;
+      padding: 25px;
+      position: relative;
+      box-shadow: 0 6px 40px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+    }
+
+    /* Subtle inner glow */
+    .glass-container::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(circle at top left,
+        rgba(255,255,255,0.4),
+        transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Player panels */
+    .panel_board {
+      display: flex;
+      justify-content: space-around;
+      width: 420px;
+      margin-bottom: 15px;
+      gap: 20px;
+    }
+
+    .player-panel {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px) saturate(200%);
+      -webkit-backdrop-filter: blur(12px) saturate(200%);
+      border: 1px solid var(--glass-border);
+      border-radius: 15px;
+      padding: 12px 20px;
+      transition: all 0.3s ease;
+      flex: 1;
+      justify-content: center;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    .player-panel.active {
+      border-color: var(--glass-highlight);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+    }
+
+    .player-panel img {
+      height: 42px;
+      width: 42px;
+      filter: drop-shadow(0 0 5px rgba(255,255,255,0.4));
+    }
+
+    .player-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .player-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      opacity: 0.85;
+    }
+
+    .player-score {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    /* Game grid */
+    .game_cnt {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      width: 330px;
+      height: 330px;
+      gap: 12px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .game_box {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 4rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .game_box::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(145deg, rgba(255,255,255,0.15), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .game_box:hover::before {
+      opacity: 1;
+    }
+
+    .game_box:hover {
+      transform: scale(1.04);
+      box-shadow: 0 6px 25px rgba(255, 255, 255, 0.15);
+    }
+
+    /* Symbols */
+    .game_box.x::after {
+      content: 'X';
+      color: #d7c6ff;
+      text-shadow: 0 0 12px rgba(215,198,255,0.7);
+    }
+
+    .game_box.o::after {
+      content: 'O';
+      color: #ffc8f5;
+      text-shadow: 0 0 12px rgba(255,200,245,0.7);
+    }
+
+    /* Status Text */
+    .winner-text {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-top: 18px;
+      text-shadow: 0 3px 10px rgba(0,0,0,0.4);
+      min-height: 24px;
+      text-align: center;
+    }
+
+    /* Restart button */
+    .btn-container {
+      margin-top: 20px;
+    }
+
+    .btn {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      padding: 12px 26px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 700;
+      color: #fff;
+      backdrop-filter: blur(8px) saturate(150%);
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.28);
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+    }
+
+  </style>
 </head>
 <body>
-    <header>
-        TIC_TAC_TOE
-        <nav>
-            <button class="undo_btn" onclick="undo()">UNDO</button>
-        </nav>
-    </header>
-    <main>
-        <div class="panel_board">
-            <div class="x_panel_board panel_board">
-                <div class="panel_img">
-                    <img src="asset/Union.svg" alt="" srcset="" class="">
-                </div>
-                <div class="panel_img">
-                    55
-                </div>
-            </div>
-            <div class="o_panel_board panel_board">
-                
-                <div class="panel_img">
-                    <img src="asset/Ellipse1.svg" alt="" srcset="" class="">
-                </div>
-                <div class="panel_img">
-                    55
-                </div>
+  <main>
+    <div class="header">Tic-Tac-Toe</div>
 
-
-            </div>
-
-
+    <div class="panel_board">
+      <div id="x-panel" class="player-panel">
+        <img src="https://www.svgrepo.com/show/503417/cross.svg" alt="X Icon">
+        <div class="player-info">
+          <span id="x-name" class="player-name">Player X</span>
+          <span id="x-score" class="player-score">0</span>
         </div>
-        <div class="game_cnt">
-            <div class="game_box_row">
-                <div class="game_box">
-                </div>
-                <div class="game_box">
-                </div>
-                <div class="game_box">
-                </div>
-            </div>
-            <div class="game_box_row">
-                <div class="game_box">
-                </div>
-                <div class="game_box">
-                </div>
-                <div class="game_box ">
-                </div>
-            </div>
-            <div class="game_box_row">
-                <div class="game_box ">
-                </div>
-                <div class="game_box">
-                </div>
-                <div class="game_box">
-                </div>
-            </div>
-            
-
+      </div>
+      <div id="o-panel" class="player-panel">
+        <img src="https://www.svgrepo.com/show/503419/circle.svg" alt="O Icon">
+        <div class="player-info">
+          <span id="o-name" class="player-name">Player O</span>
+          <span id="o-score" class="player-score">0</span>
         </div>
-        
-    </main>
+      </div>
+    </div>
+
+    <div class="glass-container">
+      <div class="game_cnt">
+        <div class="game_box"></div>
+        <div class="game_box"></div>
+        <div class="game_box"></div>
+        <div class="game_box"></div>
+        <div class="game_box"></div>
+        <div class="game_box"></div>
+        <div class="game_box"></div>
+        <div class="game_box"></div>
+        <div class="game_box"></div>
+      </div>
+      <div id="status-text" class="winner-text"></div>
+    </div>
+
+    <div class="btn-container">
+      <button id="restart-btn" class="btn">RESTART</button>
+    </div>
+  </main>
+
+  <script>
+    const boxes = document.querySelectorAll('.game_box');
+    const xPanel = document.getElementById('x-panel');
+    const oPanel = document.getElementById('o-panel');
+    const xScoreEl = document.getElementById('x-score');
+    const oScoreEl = document.getElementById('o-score');
+    const xNameEl = document.getElementById('x-name');
+    const oNameEl = document.getElementById('o-name');
+    const statusText = document.getElementById('status-text');
+    const restartBtn = document.getElementById('restart-btn');
+
+    let currentPlayer = 'X';
+    let gameActive = true;
+    let gameState = ['', '', '', '', '', '', '', '', ''];
+    let xScore = 0;
+    let oScore = 0;
+
+    const winningConditions = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    const playerNameX = prompt("Enter Player X's name:", "Player X") || "Player X";
+    const playerNameO = prompt("Enter Player O's name:", "Player O") || "Player O";
+    xNameEl.textContent = playerNameX;
+    oNameEl.textContent = playerNameO;
+
+    function updateTurnIndicator() {
+      if (currentPlayer === 'X') {
+        xPanel.classList.add('active');
+        oPanel.classList.remove('active');
+        statusText.textContent = `${playerNameX}'s turn`;
+      } else {
+        oPanel.classList.add('active');
+        xPanel.classList.remove('active');
+        statusText.textContent = `${playerNameO}'s turn`;
+      }
+    }
+
+    function checkWin() {
+      let roundWon = false;
+      for (let i = 0; i < winningConditions.length; i++) {
+        const [a, b, c] = winningConditions[i];
+        if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+          roundWon = true;
+          break;
+        }
+      }
+
+      if (roundWon) {
+        gameActive = false;
+        if (currentPlayer === 'O') {
+          xScore++;
+          xScoreEl.textContent = xScore;
+          statusText.textContent = `${playerNameX} wins!`;
+        } else {
+          oScore++;
+          oScoreEl.textContent = oScore;
+          statusText.textContent = `${playerNameO} wins!`;
+        }
+        return;
+      }
+
+      if (!gameState.includes('')) {
+        gameActive = false;
+        statusText.textContent = "It's a draw!";
+        return;
+      }
+
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      updateTurnIndicator();
+    }
+
+    function handleCellClick(e) {
+      const index = Array.from(boxes).indexOf(e.target);
+      if (gameState[index] !== '' || !gameActive) return;
+      gameState[index] = currentPlayer;
+      e.target.classList.add(currentPlayer.toLowerCase());
+      checkWin();
+    }
+
+    function restartGame() {
+      gameActive = true;
+      currentPlayer = 'X';
+      gameState = ['', '', '', '', '', '', '', '', ''];
+      boxes.forEach(box => box.classList.remove('x', 'o'));
+      updateTurnIndicator();
+    }
+
+    boxes.forEach(box => box.addEventListener('click', handleCellClick));
+    restartBtn.addEventListener('click', restartGame);
+
+    updateTurnIndicator();
+  </script>
 </body>
-<script>
-    const x_panel = document.querySelector(".x_panel_board");
-    const o_panel = document.querySelector(".o_panel_board");
-    const undo_btn = document.querySelector(".undo_btn");
-    const boxes = document.querySelectorAll(".game_box");
-    var boxFilled;
-    var lastBoxSelected = 0;
-    var allMoves = [] ?? [0];
-    let x_player = new Player(prompt("x-player Name"), x_panel);
-    let o_player = new Player(prompt("o-player Name"), o_panel);
-
-    // console.log(x_player.name);
-    currentPlayer = x_player;
-    function checkSelected(){
-        let currentBox = 0; //this is a default for 0
-        boxes.forEach(element => {
-            currentBox+=1;
-            // console.log(element.classList[1]);
-            if (element.classList[1] == "selected") {
-                lastBoxSelected = currentBox;
-                allMoves.push(currentBox);
-
-                
-            }
-        });
-    }
-    function undo(){
-        let achieved = boxes[allMoves.slice(-1) - 1].classList[1];
-        
-        console.log(achieved+" "+allMoves);
-        boxes[allMoves.slice(-1) - 1].classList.remove(achieved);
-        if (achieved == "x_box") {
-            currentPlayer = x_player;
-            
-        }
-        else if (achieved == "o_box"){
-            currentPlayer = o_player;
-
-        }
-        allMoves.pop();
-        switch (currentPlayer) {
-            case x_player:
-                o_player.panel.style= "border:solid 7px white";
-                x_player.panel.style= "border:solid 7px red";
-                break;
-                case o_player:
-                    o_player.panel.style= "border:solid 7px blue";
-                    x_player.panel.style= "border:solid 7px white";
-                    break;
-                    
-        
-            default:
-                break;
-        }
-        
-    }
-    function Player(a, b){
-        this.point = 0;
-        this.name = a;
-        this.panel = b;
-        this.boxClass;
-        this.numberOfMoves = [];
-
-        switch (b) {
-            case x_panel:
-                
-                this.boxClass = "x_box";
-                break;
-            case o_panel:
-                
-                this.boxClass = "o_box";
-                break;
-        
-            default:
-                break;
-        }
-        this.myBoxes = document.querySelectorAll("."+this.boxClass);
-
-    }
-    function boxFilld(){
-        let totalFilled = 0;
-
-        boxes.forEach(element => {
-        if (element.classList.length >= 2) {
-            totalFilled++;
-            // console.log(totalFilled);
-        }
-        if (totalFilled >= 9) {
-            boxFilled = true;
-        }else{
-            boxFilled = false;
-        }
-            
-        });
-        
-    }
-
-    console.log(boxFilld());
-    function play(player){
-        let position = player;
-        // console.log(player.myBoxes);
-        boxFilld();
-        if (boxFilled) {
-            setTimeout(function(){
-                if (confirm("Game over \n Please refresh to start all over")) {
-                    document.location.reload(true);
-                }
-                
-            }, 1000)
-            
-        }
-        else {
-            player.numberOfMoves.push(lastBoxSelected);
-            console.log(player);
-
-        }
-        // console.log(boxFilled);
-
-    }
-    
-    
-    currentPlayer.panel.style= "border:solid 7px red";
-
-    let findBox = 0;
-    boxes.forEach(element => {
-        findBox++;
-        // console.log(findBox);
-        element.addEventListener("click", () =>{
-            // console.log(boxes[findBox]);
-            // console.log(element.classList);
-            // console.log(currentPlayer);
-            element.classList.add("selected");
-            checkSelected();
-            element.classList.remove("selected");
-            console.log(lastBoxSelected);
-            if (element.classList.length < 2) {
-
-            switch (currentPlayer) {
-                case x_player:
-                        element.classList.add("x_box");
-                        // element.classList.remove("game_box");
-                        currentPlayer = o_player;
-                        x_player.panel.style= "border:solid 7px white";
-                        o_player.panel.style= "border:solid 7px blue";
-                        x_player.myBoxes = document.querySelectorAll(".x_box");
-                        play(x_player);
-                        
-                        // x_player.ni = findBox;
-                        
-                        
-                        
-                        
-                        break;
-                        case o_player:
-                            element.classList.add("o_box");
-                            currentPlayer = x_player;
-                            o_player.panel.style= "border:solid 7px white";
-                            x_player.panel.style= "border:solid 7px red";
-                            o_player.myBoxes = document.querySelectorAll(".o_box");
-                            play(o_player);
-                        break;
-            
-                default:
-                    break;
-            }
-        }
-        })
-    });
-    // undo_btn.addEventListener("click", undo());
-</script>
 </html>
